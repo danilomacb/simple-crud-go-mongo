@@ -39,8 +39,9 @@ func main() {
 
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", add).Methods("POST")
+	myRouter.HandleFunc("/", add).Methods("POST", "OPTIONS")
 	myRouter.HandleFunc("/", list)
+	myRouter.HandleFunc("/{id}", delete).Methods("DELETE", "OPTIONS")
 	myRouter.Use(mux.CORSMethodMiddleware(myRouter))
 	log.Fatal(http.ListenAndServe(":3001", myRouter))
 }
@@ -52,8 +53,8 @@ type Element struct {
 
 func setupResponse(w *http.ResponseWriter, r *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-    (*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-    (*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 }
 
 func list(w http.ResponseWriter, r *http.Request) {
@@ -106,5 +107,31 @@ func add(w http.ResponseWriter, r *http.Request) {
 	_, err := collection.InsertOne(ctx, element)
 	if err != nil {
 		log.Fatal(err)
+	}
+}
+
+func delete(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	idPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	filter := bson.M{"_id": idPrimitive}
+
+	res, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if res.DeletedCount == 0 {
+		log.Fatal("No tasks were deleted")
 	}
 }
