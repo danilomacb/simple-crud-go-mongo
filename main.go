@@ -42,6 +42,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/", add).Methods("POST", "OPTIONS")
 	myRouter.HandleFunc("/", list)
 	myRouter.HandleFunc("/{id}", delete).Methods("DELETE", "OPTIONS")
+	myRouter.HandleFunc("/{id}", update).Methods("PUT", "OPTIONS")
 	myRouter.Use(mux.CORSMethodMiddleware(myRouter))
 	log.Fatal(http.ListenAndServe(":3001", myRouter))
 }
@@ -133,5 +134,39 @@ func delete(w http.ResponseWriter, r *http.Request) {
 
 	if res.DeletedCount == 0 {
 		log.Fatal("No tasks were deleted")
+	}
+}
+
+func update(w http.ResponseWriter, r *http.Request) {
+	setupResponse(&w, r)
+	if (*r).Method == "OPTIONS" {
+		return
+	}
+
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	idPrimitive, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var e Element
+
+	err2 := json.NewDecoder(r.Body).Decode(&e)
+	if err2 != nil {
+		log.Fatal(err2)
+	}
+
+	filter := bson.M{"_id": idPrimitive}
+	update := bson.D{{"$set", bson.D{{"content", e.Content}}}}
+
+	var updatedDocument bson.M
+	err3 := collection.FindOneAndUpdate(ctx, filter, update).Decode(&updatedDocument)
+	if err3 != nil {
+		if err3 == mongo.ErrNoDocuments {
+			return
+		}
+		log.Fatal(err3)
 	}
 }
