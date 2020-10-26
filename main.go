@@ -49,7 +49,7 @@ func main() {
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/", add).Methods("POST", "OPTIONS")
-	myRouter.HandleFunc("/", list)
+	myRouter.HandleFunc("/", list).Methods("GET", "OPTIONS")
 	myRouter.HandleFunc("/{id}", delete).Methods("DELETE", "OPTIONS")
 	myRouter.HandleFunc("/{id}", update).Methods("PUT", "OPTIONS")
 	myRouter.Use(mux.CORSMethodMiddleware(myRouter))
@@ -64,7 +64,7 @@ type Element struct {
 func setupResponse(w *http.ResponseWriter, r *http.Request) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }
 
 func list(w http.ResponseWriter, r *http.Request) {
