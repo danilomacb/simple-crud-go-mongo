@@ -101,6 +101,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintln(w, string(elementsJSON))
+	w.WriteHeader(http.StatusOK)
 }
 
 func add(w http.ResponseWriter, r *http.Request) {
@@ -118,6 +119,8 @@ func add(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
@@ -144,6 +147,8 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	if res.DeletedCount == 0 {
 		log.Fatal("No tasks were deleted")
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
@@ -178,4 +183,6 @@ func update(w http.ResponseWriter, r *http.Request) {
 		}
 		log.Fatal(err3)
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
