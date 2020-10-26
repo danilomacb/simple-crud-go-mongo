@@ -77,7 +77,8 @@ func list(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := collection.Find(ctx, bson.D{{}})
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error on list, fail to find elements:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 	defer cur.Close(ctx)
 
@@ -85,19 +86,22 @@ func list(w http.ResponseWriter, r *http.Request) {
 		var e Element
 		err := cur.Decode(&e)
 		if err != nil {
-			log.Fatal(err)
+			log.Println("Error on list, fail to decode element:", err)
+			w.WriteHeader(http.StatusInternalServerError)
 		}
 
 		elements = append(elements, e)
 	}
 
 	if err := cur.Err(); err != nil {
-		log.Fatal(err)
+		log.Println("Error on list, something went wrong on findeds elements:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	elementsJSON, err := json.Marshal(elements)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error on list, fail to convert to json:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	fmt.Fprintln(w, string(elementsJSON))
