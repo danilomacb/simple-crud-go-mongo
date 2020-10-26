@@ -105,7 +105,6 @@ func list(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintln(w, string(elementsJSON))
-	w.WriteHeader(http.StatusOK)
 }
 
 func add(w http.ResponseWriter, r *http.Request) {
@@ -134,8 +133,6 @@ func add(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error on add, fail to insert one:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 func delete(w http.ResponseWriter, r *http.Request) {
@@ -164,8 +161,6 @@ func delete(w http.ResponseWriter, r *http.Request) {
 	if res.DeletedCount == 0 {
 		log.Println("Error on delete, no tasks were deleted")
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
@@ -200,6 +195,4 @@ func update(w http.ResponseWriter, r *http.Request) {
 		log.Println("Error on update, failt to find one and update:", err3)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
-
-	w.WriteHeader(http.StatusOK)
 }
