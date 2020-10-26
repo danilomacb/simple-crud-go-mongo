@@ -149,18 +149,20 @@ func delete(w http.ResponseWriter, r *http.Request) {
 
 	idPrimitive, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error on delete, fail to transform id on primitive:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	filter := bson.M{"_id": idPrimitive}
 
 	res, err := collection.DeleteOne(ctx, filter)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error on delete, fail to delete one:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	if res.DeletedCount == 0 {
-		log.Fatal("No tasks were deleted")
+		log.Println("Error on delete, no tasks were deleted")
 	}
 
 	w.WriteHeader(http.StatusOK)
