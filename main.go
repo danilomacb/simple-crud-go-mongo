@@ -179,14 +179,16 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 	idPrimitive, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Error on update, fail to transform id on primitive:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	var e Element
 
 	err2 := json.NewDecoder(r.Body).Decode(&e)
 	if err2 != nil {
-		log.Fatal(err2)
+		log.Println("Error on update, fail to transform body on json:", err2)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	filter := bson.M{"_id": idPrimitive}
@@ -195,10 +197,8 @@ func update(w http.ResponseWriter, r *http.Request) {
 	var updatedDocument bson.M
 	err3 := collection.FindOneAndUpdate(ctx, filter, update).Decode(&updatedDocument)
 	if err3 != nil {
-		if err3 == mongo.ErrNoDocuments {
-			return
-		}
-		log.Fatal(err3)
+		log.Println("Error on update, failt to find one and update:", err3)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	w.WriteHeader(http.StatusOK)
