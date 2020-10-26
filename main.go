@@ -114,14 +114,25 @@ func add(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reqBody, _ := ioutil.ReadAll(r.Body)
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println("Error on add, fail to read request body:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
 	var element Element
 	element.ID = primitive.NewObjectID()
-	json.Unmarshal(reqBody, &element)
 
-	_, err := collection.InsertOne(ctx, element)
-	if err != nil {
-		log.Fatal(err)
+	err2 := json.Unmarshal(reqBody, &element)
+	if err2 != nil {
+		log.Println("Error on add, fail to convert json to Element:", err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	_, err3 := collection.InsertOne(ctx, element)
+	if err3 != nil {
+		log.Println("Error on add, fail to insert one:", err)
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	w.WriteHeader(http.StatusOK)
