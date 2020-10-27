@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -39,10 +38,4 @@ func main() {
 	fmt.Println("Server running on port 3001")
 
 	router()
-}
-
-func setupResponse(w *http.ResponseWriter, r *http.Request) {
-	(*w).Header().Set("Access-Control-Allow-Origin", "*")
-	(*w).Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-	(*w).Header().Set("Access-Control-Allow-Headers", "*")
 }

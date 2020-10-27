@@ -10,7 +10,7 @@ import (
 )
 
 func list(w http.ResponseWriter, r *http.Request) {
-	setupResponse(&w, r)
+	headers(&w, r)
 	if (*r).Method == "OPTIONS" {
 		return
 	}
