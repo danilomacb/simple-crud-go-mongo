@@ -21,12 +21,12 @@ func add(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	var element Element
+	var element element
 	element.ID = primitive.NewObjectID()
 
 	err2 := json.Unmarshal(reqBody, &element)
 	if err2 != nil {
-		log.Println("Error on add, fail to convert json to Element:", err)
+		log.Println("Error on add, fail to convert json to element:", err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 

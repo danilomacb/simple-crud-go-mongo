@@ -25,7 +25,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	var e Element
+	var e element
 
 	err2 := json.NewDecoder(r.Body).Decode(&e)
 	if err2 != nil {

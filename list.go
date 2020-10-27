@@ -15,7 +15,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var elements []Element
+	var elements []element
 
 	cur, err := collection.Find(ctx, bson.D{{}})
 	if err != nil {
@@ -25,7 +25,7 @@ func list(w http.ResponseWriter, r *http.Request) {
 	defer cur.Close(ctx)
 
 	for cur.Next(ctx) {
-		var e Element
+		var e element
 		err := cur.Decode(&e)
 		if err != nil {
 			log.Println("Error on list, fail to decode element:", err)
