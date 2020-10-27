@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -39,17 +38,7 @@ func main() {
 
 	fmt.Println("Server running on port 3001")
 
-	handleRequests()
-}
-
-func handleRequests() {
-	myRouter := mux.NewRouter().StrictSlash(true)
-	myRouter.HandleFunc("/", add).Methods("POST", "OPTIONS")
-	myRouter.HandleFunc("/", list).Methods("GET", "OPTIONS")
-	myRouter.HandleFunc("/{id}", delete).Methods("DELETE", "OPTIONS")
-	myRouter.HandleFunc("/{id}", update).Methods("PUT", "OPTIONS")
-	myRouter.Use(mux.CORSMethodMiddleware(myRouter))
-	log.Fatal(http.ListenAndServe(":3001", myRouter))
+	router()
 }
 
 func setupResponse(w *http.ResponseWriter, r *http.Request) {
